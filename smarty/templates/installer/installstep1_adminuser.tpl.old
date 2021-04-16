@@ -1,0 +1,27 @@
+{extends file='generic_installstep.tpl'}
+{block name='installstep_title'}<span class="far fa-user"></span> Frontend admin user{/block}
+{block name='installstep_description'}The administrator is a user that can do anything here{/block}
+{block name='installstep_form' nocache}
+            <div class="form-group">
+              <label for="adminInputEmail">Email address</label>
+              <div class="input-group has-validation">
+                <div class="input-group-prepend"><span class="input-group-text"><span class="fas fa-at"></span></span></div>
+                <input type="email" class="form-control" id="adminInputEmail" name="adminInputEmail" aria-describedby="emailHelp" value="{$params['adminInputEmail']|escape:'htmlall'}" required>
+                <div class="valid-feedback"><!--Looks cool--></div>
+                <div class="invalid-feedback"><ul>{foreach $formerr['adminInputEmail'] as $err}<li>{$err}</li>{/foreach}</ul></div>
+              </div>
+              <small id="emailHelp" class="form-text text-muted">This will remain private</small>
+            </div>
+            <div class="form-group">
+              <label for="adminInputPassword">Password</label>
+              <div class="input-group has-validation" id="show_hide_password">
+                <div class="input-group-prepend"><span class="input-group-text"><span class="fas fa-key"></span></span></div>
+                <input type="password" class="form-control{if $formerr['adminInputPassword']} is-invalid{/if}" id="adminInputPassword" name="adminInputPassword" aria-describedby="passwordHelp" value="{$params['adminInputPassword']|escape:'htmlall'}" required>
+                <div class="valid-feedback"><!--Looks cool--></div>
+                <div class="invalid-feedback"><ul>{foreach $formerr['adminInputPassword'] as $err}<li>{$err}</li>{/foreach}</ul></div>
+              </div>
+              <small id="passwordHelp" class="form-text text-muted">
+                Your password must be {$minpwd}-{$maxpwd} characters long, can contain letters, numbers, spaces, some special characters.
+              </small>
+            </div>
+{/block}

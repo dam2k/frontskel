@@ -1,0 +1,6 @@
+https://tideways.com/profiler/blog/5-ways-to-increase-php-performance
+
+composer dump-autoload --optimize 
+composer dump-autoload --classmap-authoritative 
+composer dump-autoload --apcu 
+

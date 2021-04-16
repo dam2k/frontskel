@@ -1,0 +1,7 @@
+composer.phar
+composer.lock
+/vendor/*
+/tmp/*
+/smarty/templates_c/*
+/smarty/cache/*
+/logs/*
