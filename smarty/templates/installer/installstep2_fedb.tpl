@@ -1,6 +1,7 @@
 {extends file='generic_installstep.tpl'}
 {block name='installstep_title'}<span class="fas fa-database"></span> Frontend DB details{/block}
 {block name='installstep_description'}We use the database to store users, roles, expired access tokens and other useful stuff{/block}
+{block name='installstep_smalldescription'}<p>Just create your db, user and permissions.</p><small class="text-muted">Eg for MySQL on localhost: <pre><code>CREATE USER 'frontskel'@'localhost' IDENTIFIED BY 'yourseuredbuserpwd';<br>CREATE DATABASE frontskel;<br>GRANT ALL PRIVILEGES ON frontskel.* to 'frontskel'@'localhost';<br>FLUSH PRIVILEGES;</code></pre></small>{/block}
 {block name='installstep_form' nocache}
 {assign var="_inputid" value="adminInputDBUser"}{include 'formgroup_begin.tpl' _inputname=$_inputid _inputlabel='DB User' _FA_icon='fas fa-user'}
                 <input type="text" class="form-control{if $formerr[$_inputid]} is-invalid{else}{if isset($params[$_inputid])} is-valid{/if}{/if}" id="{$_inputid}" name="{$_inputid}" aria-describedby="{$_inputid}Help" value="{if isset($params[$_inputid])}{$params[$_inputid]|escape:'htmlall'}{else}{$defaultdbuser}{/if}" placeholder="{$defaultdbuser}" required>
