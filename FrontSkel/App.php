@@ -225,6 +225,7 @@ class App
         } catch(\FrontSkel\Exceptions\ConfigNotValidException $e) { // cannot open config file
             $installing=true;
             $this->c = $this->initializeContainer('../etc/config_install.php');
+            $this->c->set('configFileNew', $config);
         }
         $this->slimapp = Bridge::create($this->c); // use slim-bridge to create the slim app: https://php-di.org/doc/frameworks/slim.html
         if(substr($this->c->get('settings')['basePath'], -1) == '/') { // fuck! I said in the config comment to not put a trailing slash, even if basepath is / !!!
