@@ -137,6 +137,7 @@ class InstallerRouter extends GenericRouter
      * Return an empty array if everything is OK, or the list of problematic elements in case of validation errors
      */
     private function checkFormParams(string $step, array $params): array {
+        // https://www.sirius.ro/php/sirius/validation/validation_helper.html
         $ret=[];
         $validator = new \Sirius\Validation\Validator;
         switch($step) {
@@ -162,6 +163,19 @@ class InstallerRouter extends GenericRouter
             $ret=$this->validateForm($step, $params, $validator);
             if(count($ret)) return $ret; // some error on form validation
             $ret=$this->validateDb($step, $params);
+            return $ret;
+            break;
+        case 3: // tokens
+            // REFRESH TOKEN
+            $validator->add('adminInputRTKey', 'required | length(64,64) | regex(/^[a-f0-9]+$/i)'); // Refresh token key
+            $validator->add('adminInputRTTimeSkew', 'required | Integer | GreaterThan(min=0&inclusive=true)'); // Refresh token time skew
+            $validator->add('adminInputRTExpiration', 'required | Integer | GreaterThan(min=0&inclusive=false)'); // Refresh token expiration time
+            $validator->add('adminInputRTAutoRefresh', 'required | Integer | GreaterThan(min=0&inclusive=true)'); // Refresh token autorefresh
+            // ACCESS TOKEN
+            $validator->add('adminInputATKey', 'required | length(64,64) | regex(/^[a-f0-9]+$/i)'); // Access token key
+            $validator->add('adminInputATTimeSkew', 'required | Integer | GreaterThan(min=0&inclusive=true)'); // Access token time skew
+            $validator->add('adminInputATExpiration', 'required | Integer | GreaterThan(min=0&inclusive=false)'); // Access token expiration time
+            $ret=$this->validateForm($step, $params, $validator);
             return $ret;
             break;
         default:
@@ -290,6 +304,24 @@ class InstallerRouter extends GenericRouter
             $this->smarty->assign('loaded_dbdrivers', $loaded_dbdrivers);
             
             $this->smartyRender($response, 'installstep2_fedb.tpl');
+            break;
+        case 3: // tokens
+            // default rt key
+            $this->smarty->assign('defaultrtkey', bin2hex(random_bytes(32)));
+            // default rt time skew
+            $this->smarty->assign('defaultrtts', 10);
+            // default rt time expiration
+            $this->smarty->assign('defaultrtexp', 10512000);
+            // default rt autorefresh time
+            $this->smarty->assign('defaultrtar', 7200);
+            // default at key
+            $this->smarty->assign('defaultatkey', bin2hex(random_bytes(32)));
+            // default at time skew
+            $this->smarty->assign('defaultatts', 2);
+            // default at time expiration
+            $this->smarty->assign('defaultatexp', 60);
+            
+            $this->smartyRender($response, 'installstep3_tokens.tpl');
             break;
         default:
             $msg="User requested install step ".$step." but this is not valid here";
