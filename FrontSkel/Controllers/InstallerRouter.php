@@ -68,27 +68,6 @@ class InstallerRouter extends GenericRouter
      * try to validate DB connection
      */
     private function validateDb(string $step, array $params): array {
-        /*
-        $validator->add('adminInputDBUser', 'required | length(1,16)'); // DB user
-        $validator->add('adminInputDBPwd', 'length(0,'.$this->maxpwd.')'); // DB password
-        $validator->add('adminInputDBHost', 'length(0,64)'); // DB host
-        $validator->add('adminInputDBPort', 'Between(0,65535)'); // DB port
-        $validator->add('adminInputDBName', 'required | length(1,64)'); // DB name
-        $validator->add('adminInputDBSocket', 'length(0,4096)'); // UX Socket
-        $validator->add('adminInputDBCharset', 'length(0,64)'); // Default DB charset
-        $validator->add('adminInputDBDriver', 'length(0,16)'); // DB Driver
-        
-        'user' => $params[],
-        'password' => '',
-        //'host' => '127.0.0.1',
-        //'port' => 3306,
-        'dbname' => 're',
-        'unix_socket' => '/var/run/mysqld/mysqld.sock',
-        'charset' => 'UTF8',
-        'driver' => 'pdo_mysql',
-        'driverOptions' => [],
-        */
-        
         // https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#configuration
         $dbparams=[
             'user'=>$params['adminInputDBUser'],
@@ -309,11 +288,11 @@ class InstallerRouter extends GenericRouter
             // default rt key
             $this->smarty->assign('defaultrtkey', bin2hex(random_bytes(32)));
             // default rt time skew
-            $this->smarty->assign('defaultrtts', 10);
+            $this->smarty->assign('defaultrtts', 45);
             // default rt time expiration
-            $this->smarty->assign('defaultrtexp', 10512000);
+            $this->smarty->assign('defaultrtexp', 14515200);
             // default rt autorefresh time
-            $this->smarty->assign('defaultrtar', 7200);
+            $this->smarty->assign('defaultrtar', 604800);
             // default at key
             $this->smarty->assign('defaultatkey', bin2hex(random_bytes(32)));
             // default at time skew
