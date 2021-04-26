@@ -1,5 +1,5 @@
 {extends file='generic_installstep.tpl'}
-{block name='installstep_title'}<span class="fas fa-signature"></span> Access and Refresh Tokens{/block}
+{block name='installstep_title'}<span class="fas fa-file-signature"></span> Access and Refresh Tokens{/block}
 {block name='installstep_description'}JWT tokens are stateful security mechanisms used to grant access to web resources via cryptography{/block}
 {block name='installstep_smalldescription'}<p>A refresh token is granted after a successful authentication, it is used to release an access token. Both tokens has expiration time that you can set here. When an access token is expired, a new one is released automatically from a valid refresh token. When the refresh token expires, you can set if it can be automatically renewed or not. Refresh token can also be revoked, so that at access token expiration the user will be logged out.</p>{/block}
 {block name='installstep_form' nocache}

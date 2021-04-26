@@ -120,7 +120,7 @@ class InstallerRouter extends GenericRouter
         $ret=[];
         $validator = new \Sirius\Validation\Validator;
         switch($step) {
-        case 0: // welcome
+        case 0: // installer welcome
             // welcome stage does not expect parameters
             return $ret;
             break;
@@ -144,7 +144,7 @@ class InstallerRouter extends GenericRouter
             $ret=$this->validateDb($step, $params);
             return $ret;
             break;
-        case 3: // tokens
+        case 3: // access tokens
             // REFRESH TOKEN
             $validator->add('adminInputRTKey', 'required | length(64,64) | regex(/^[a-f0-9]+$/i)'); // Refresh token key
             $validator->add('adminInputRTTimeSkew', 'required | Integer | GreaterThan(min=0&inclusive=true)'); // Refresh token time skew
@@ -154,6 +154,14 @@ class InstallerRouter extends GenericRouter
             $validator->add('adminInputATKey', 'required | length(64,64) | regex(/^[a-f0-9]+$/i)'); // Access token key
             $validator->add('adminInputATTimeSkew', 'required | Integer | GreaterThan(min=0&inclusive=true)'); // Access token time skew
             $validator->add('adminInputATExpiration', 'required | Integer | GreaterThan(min=0&inclusive=false)'); // Access token expiration time
+            $ret=$this->validateForm($step, $params, $validator);
+            return $ret;
+            break;
+        case 4: // login cookie
+            $validator->add('adminInputLCName', 'required | length(1,12)'); // Login cookie name
+            $validator->add('adminInputLCKey', 'required | length(64,64) | regex(/^[a-f0-9]+$/i)'); // Login cookie key
+            $validator->add('adminInputLCSalt', 'required | length(24,24) | regex(/^[a-f0-9]+$/i)'); // Login cookie salt
+            $validator->add('adminInputLCPath', 'required | regex(/^\/[A-Za-z0-9_\.\/-]*$/)'); // Login cookie path
             $ret=$this->validateForm($step, $params, $validator);
             return $ret;
             break;
@@ -246,8 +254,6 @@ class InstallerRouter extends GenericRouter
         $this->smarty->assign('formstep', '__formstep'); // submit button form attribute name
         $this->smarty->assign('formbackward', '__back'); // back submit button value
         $this->smarty->assign('formforward', '__next');  // next submit button value
-        $this->smarty->assign('minpwd', $this->minpwd);  // generic passwords, minimum length
-        $this->smarty->assign('maxpwd', $this->maxpwd);  // generic passwords, maximum length
         $this->smarty->assign('params', $params2);       // form parameters
         $this->smarty->assign('formerr', $formerr);
         
@@ -257,6 +263,8 @@ class InstallerRouter extends GenericRouter
             $this->smartyRender($response, 'index.tpl');
             break;
         case 1: // fronted admin user details
+            $this->smarty->assign('minpwd', $this->minpwd);  // generic passwords, minimum length
+            $this->smarty->assign('maxpwd', $this->maxpwd);  // generic passwords, maximum length
             $this->smartyRender($response, 'installstep1_adminuser.tpl');
             break;
         case 2: // fronted DB details
@@ -301,6 +309,18 @@ class InstallerRouter extends GenericRouter
             $this->smarty->assign('defaultatexp', 60);
             
             $this->smartyRender($response, 'installstep3_tokens.tpl');
+            break;
+        case 4:
+            // default login cookie name
+            $this->smarty->assign('defaultlcname', '_FSlogin');
+            // default login cookie key
+            $this->smarty->assign('defaultlckey', bin2hex(random_bytes(32)));
+            // default login cookie salt
+            $this->smarty->assign('defaultlcsalt', bin2hex(random_bytes(12)));
+            // default login cookie path
+            $this->smarty->assign('defaultlcpath', "/");
+            
+            $this->smartyRender($response, 'installstep4_login.tpl');
             break;
         default:
             $msg="User requested install step ".$step." but this is not valid here";
