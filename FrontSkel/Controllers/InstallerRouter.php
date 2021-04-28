@@ -306,7 +306,7 @@ class InstallerRouter extends GenericRouter
             // default at time skew
             $this->smarty->assign('defaultatts', 2);
             // default at time expiration
-            $this->smarty->assign('defaultatexp', 60);
+            $this->smarty->assign('defaultatexp', 6);
             
             $this->smartyRender($response, 'installstep3_tokens.tpl');
             break;
