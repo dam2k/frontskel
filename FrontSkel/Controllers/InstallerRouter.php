@@ -162,10 +162,10 @@ class InstallerRouter extends GenericRouter
             $validator->add('adminInputLCKey', 'required | length(64,64) | regex(/^[a-f0-9]+$/i)'); // Login cookie key
             $validator->add('adminInputLCSalt', 'required | length(24,24) | regex(/^[a-f0-9]+$/i)'); // Login cookie salt
             $validator->add('adminInputLCPath', 'required | regex(/^\/[A-Za-z0-9_\.\/-]*$/)'); // Login cookie path
-            $validator->add('adminInputLCAtHostOnly', 'Between(1,1)'); // Login cookie HostOnly attribute
-            $validator->add('adminInputLCAtSecure', 'Between(1,1)'); // Login cookie Secure attribute
-            $validator->add('adminInputLCAtHTTPOnly', 'Between(1,1)'); // Login cookie HTTPOnly attribute
-            $validator->add('adminInputLCAtSameSite', 'required | regex(/^(Lax|Strict|None)$/)'); // Login cookie SameSite attribute
+            $validator->add('adminInputLCAtHostOnly', 'Between(0,1)'); // Login cookie HostOnly attribute
+            $validator->add('adminInputLCAtSecure', 'Between(0,1)'); // Login cookie Secure attribute
+            $validator->add('adminInputLCAtHTTPOnly', 'Between(0,1)'); // Login cookie HTTPOnly attribute
+            $validator->add('adminInputLCAtSameSite', [['required'], ['Regex', '/^(Lax|Strict|None)$/']]); // Login cookie SameSite attribute
             $ret=$this->validateForm($step, $params, $validator);
             return $ret;
             break;
