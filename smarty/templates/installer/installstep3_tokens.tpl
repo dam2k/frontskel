@@ -10,11 +10,11 @@
 
 {assign var="_inputid" value="adminInputRTTimeSkew"}{include 'formgroup_begin.tpl' _inputname=$_inputid _inputlabel='Time skew' _FA_icon='fas fa-stopwatch'}
                 <input type="text" class="form-control{if $formerr[$_inputid]} is-invalid{else}{if isset($params[$_inputid])} is-valid{/if}{/if}" id="{$_inputid}" name="{$_inputid}" aria-describedby="{$_inputid}Help" value="{if isset($params[$_inputid])}{$params[$_inputid]|escape:'htmlall'}{else}{$defaultrtts}{/if}" placeholder="{$defaultrtts}" required>
-{include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='Seems cool' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Time skew tolerance in seconds before new issue and after expiration for the refresh token. Don\'t keep to high (0 to 30 should be enough!)' nocache}
+{include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='Seems cool' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Time skew tolerance in seconds before new issue and after expiration for the refresh token. Don\'t keep to high (0 to 60 should be enough!)' nocache}
 
 {assign var="_inputid" value="adminInputRTExpiration"}{include 'formgroup_begin.tpl' _inputname=$_inputid _inputlabel='Expiration' _FA_icon='far fa-calendar-times'}
                 <input type="text" class="form-control{if $formerr[$_inputid]} is-invalid{else}{if isset($params[$_inputid])} is-valid{/if}{/if}" id="{$_inputid}" name="{$_inputid}" aria-describedby="{$_inputid}Help" value="{if isset($params[$_inputid])}{$params[$_inputid]|escape:'htmlall'}{else}{$defaultrtexp}{/if}" placeholder="{$defaultrtexp}" required>
-{include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='Seems cool' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Refresh token expiration time in seconds (it can/should be set high: weeks, months, even years... I like 14515200 s: 6 months)' nocache}
+{include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='Seems cool' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Refresh token expiration time in seconds. It can be set high: weeks, months, even years... I like 14515200 s: 6 months, but you may decide to let it expire sooner if you like' nocache}
 
 {assign var="_inputid" value="adminInputRTAutoRefresh"}{include 'formgroup_begin.tpl' _inputname=$_inputid _inputlabel='Autorefresh' _FA_icon='fas fa-sync-alt'}
                 <input type="text" class="form-control{if $formerr[$_inputid]} is-invalid{else}{if isset($params[$_inputid])} is-valid{/if}{/if}" id="{$_inputid}" name="{$_inputid}" aria-describedby="{$_inputid}Help" value="{if isset($params[$_inputid])}{$params[$_inputid]|escape:'htmlall'}{else}{$defaultrtar}{/if}" placeholder="{$defaultrtar}" required>
