@@ -32,6 +32,6 @@
 
 {assign var="_inputid" value="adminInputATExpiration"}{include 'formgroup_begin.tpl' _inputname=$_inputid _inputlabel='Expiration' _FA_icon='far fa-calendar-times'}
                 <input type="text" class="form-control{if $formerr[$_inputid]} is-invalid{else}{if isset($params[$_inputid])} is-valid{/if}{/if}" id="{$_inputid}" name="{$_inputid}" aria-describedby="{$_inputid}Help" value="{if isset($params[$_inputid])}{$params[$_inputid]|escape:'htmlall'}{else}{$defaultatexp}{/if}" placeholder="{$defaultatexp}" required>
-{include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='Seems cool' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Access token expiration time in seconds (it can/should be set low: 10 seconds to 5 minutes... I like 60 seconds)' nocache}
+{include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='Seems cool' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Access token expiration time in seconds (it should be set low: 10 seconds to 5 minutes... I like it small, under a minute)' nocache}
 
 {/block}
