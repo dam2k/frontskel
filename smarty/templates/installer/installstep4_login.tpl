@@ -21,6 +21,33 @@
 {include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='Seems cool' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Set a valid login cookie path.' nocache}
 
 {*
-TODO: add login cookie attributes (HostOnly, Secure, HTTPOnly, SameSite)
+TODO: fonosh to implement login cookie attributes (HostOnly, Secure, HTTPOnly, SameSite)
 *}
+{assign var="_inputid" value="adminInputLCAttributes"}{include 'formgroup_begin.tpl' _inputname=$_inputid _inputlabel='Attributes' _FA_icon='fas fa-cookie'}
+				&nbsp;
+				<div class="form-check form-check-inline">
+				  <input type="hidden" id="adminInputLCAtHostOnly" name="adminInputLCAtHostOnly" value="0">
+				  <input class="form-check-input" type="checkbox" id="adminInputLCAtHostOnly" name="adminInputLCAtHostOnly" value="1" {if not isset($params['adminInputLCAtHostOnly'])}{if $defaultlcathostonly eq 1}checked{/if}{else}{if $params['adminInputLCAtHostOnly'] eq 1}checked{/if}{/if}>
+				  <label class="form-check-label" for="adminInputLCAtHostOnly"><abbr title="Cookie must be sent to the same host that firstly sent it to the browser">HostOnly</abbr></label>
+				</div>
+				<div class="form-check form-check-inline">
+				  <input type="hidden" id="adminInputLCAtSecure" name="adminInputLCAtSecure" value="0">
+				  <input class="form-check-input" type="checkbox" id="adminInputLCAtSecure" name="adminInputLCAtSecure" value="1" {if not isset($params['adminInputLCAtSecure'])}{if $defaultlcatsecure eq 1}checked{/if}{else}{if $params['adminInputLCAtSecure'] eq 1}checked{/if}{/if}>
+				  <label class="form-check-label" for="adminInputLCAtSecure"><abbr title="Cookie must be sent only over HTTPS">Secure</abbr></label>
+				</div>
+				<div class="form-check form-check-inline">
+				  <input type="hidden" id="adminInputLCAtHTTPOnly" name="adminInputLCAtHTTPOnly" value="0">
+				  <input class="form-check-input" type="checkbox" id="adminInputLCAtHTTPOnly" name="adminInputLCAtHTTPOnly" value="1" {if not isset($params['adminInputLCAtHTTPOnly'])}{if $defaultlcathttponly eq 1}checked{/if}{else}{if $params['adminInputLCAtHTTPOnly'] eq 1}checked{/if}{/if}>
+				  <label class="form-check-label" for="adminInputLCAtHTTPOnly"><abbr title="Cookie cannot be read from scripts">HTTPOnly</abbr></label>
+				</div>
+				<div class="form-check form-check-inline">
+				  <abbr title="Declare if your cookie should be restricted to a first-party or same-site context">SameSite</abbr>
+				</div>
+				<select class="custom-select" id="adminInputLCAtSameSite" name="adminInputLCAtSameSite" required>
+					<option value="Lax" {if not isset($params['adminInputLCAtSameSite'])}{if $defaultlcatsamesite eq "Lax"}selected{/if}{else}{if $params['adminInputLCAtSameSite'] eq "Lax"}selected{/if}{/if}>Lax</option>
+					<option value="Strict" {if not isset($params['adminInputLCAtSameSite'])}{if $defaultlcatsamesite eq "Strict"}selected{/if}{else}{if $params['adminInputLCAtSameSite'] eq "Strict"}selected{/if}{/if}>Strict</option>
+					<option value="None" {if not isset($params['adminInputLCAtSameSite'])}{if $defaultlcatsamesite eq "None"}selected{/if}{else}{if $params['adminInputLCAtSameSite'] eq "None"}selected{/if}{/if}>None</option>
+				</select>
+{include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Set desired cookie attributes.' nocache}
+
 {/block}

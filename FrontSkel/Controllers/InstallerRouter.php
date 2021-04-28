@@ -138,7 +138,7 @@ class InstallerRouter extends GenericRouter
             $validator->add('adminInputDBName', 'required | length(1,64)'); // DB name
             $validator->add('adminInputDBSocket', 'length(0,4096)'); // UX Socket
             $validator->add('adminInputDBCharset', 'length(0,64)'); // Default DB charset
-            $validator->add('adminInputDBDriver', 'length(0,16)'); // DB Driver
+            $validator->add('adminInputDBDriver', 'required | length(0,16)'); // DB Driver
             $ret=$this->validateForm($step, $params, $validator);
             if(count($ret)) return $ret; // some error on form validation
             $ret=$this->validateDb($step, $params);
@@ -162,6 +162,10 @@ class InstallerRouter extends GenericRouter
             $validator->add('adminInputLCKey', 'required | length(64,64) | regex(/^[a-f0-9]+$/i)'); // Login cookie key
             $validator->add('adminInputLCSalt', 'required | length(24,24) | regex(/^[a-f0-9]+$/i)'); // Login cookie salt
             $validator->add('adminInputLCPath', 'required | regex(/^\/[A-Za-z0-9_\.\/-]*$/)'); // Login cookie path
+            $validator->add('adminInputLCAtHostOnly', 'Between(1,1)'); // Login cookie HostOnly attribute
+            $validator->add('adminInputLCAtSecure', 'Between(1,1)'); // Login cookie Secure attribute
+            $validator->add('adminInputLCAtHTTPOnly', 'Between(1,1)'); // Login cookie HTTPOnly attribute
+            $validator->add('adminInputLCAtSameSite', 'required | regex(/^(Lax|Strict|None)$/)'); // Login cookie SameSite attribute
             $ret=$this->validateForm($step, $params, $validator);
             return $ret;
             break;
@@ -319,6 +323,14 @@ class InstallerRouter extends GenericRouter
             $this->smarty->assign('defaultlcsalt', bin2hex(random_bytes(12)));
             // default login cookie path
             $this->smarty->assign('defaultlcpath', "/");
+            // default login cookie HostOnly cookie attribute
+            $this->smarty->assign('defaultlcathostonly', 1);
+            // default login cookie Secure cookie attribute
+            $this->smarty->assign('defaultlcatsecure', 1);
+            // default login cookie HTTPOnly cookie attribute
+            $this->smarty->assign('defaultlcathttponly', 1);
+            // default login cookie SameSite cookie attribute
+            $this->smarty->assign('defaultlcatsamesite', "Strict");
             
             $this->smartyRender($response, 'installstep4_login.tpl');
             break;
