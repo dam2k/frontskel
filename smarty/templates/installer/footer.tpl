@@ -1,7 +1,7 @@
 <footer>
   <!-- Copyright -->
   <div class="text-center p-3">
-    © 2020 Copyright:
+    © 2021 Copyright:
     <a href="https://www.frontskel.org/">www.frontskel.org</a>
   </div>
   <!-- Copyright -->
