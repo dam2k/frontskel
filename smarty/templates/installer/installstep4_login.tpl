@@ -20,9 +20,6 @@
                 <input type="text" class="form-control{if $formerr[$_inputid]} is-invalid{else}{if isset($params[$_inputid])} is-valid{/if}{/if}" id="{$_inputid}" name="{$_inputid}" aria-describedby="{$_inputid}Help" value="{if isset($params[$_inputid])}{$params[$_inputid]|escape:'htmlall'}{else}{$defaultlcpath}{/if}" placeholder="{$defaultlcpath}" required>
 {include 'formgroup_end.tpl' _inputname=$_inputid _valid_feedback_arr='Seems cool' _invalid_feedback_arr=$formerr[$_inputid] _helptext='Set a valid login cookie path.' nocache}
 
-{*
-TODO: fonosh to implement login cookie attributes (HostOnly, Secure, HTTPOnly, SameSite)
-*}
 {assign var="_inputid" value="adminInputLCAttributes"}{include 'formgroup_begin.tpl' _inputname=$_inputid _inputlabel='Attributes' _FA_icon='fas fa-cookie'}
 				&nbsp;
 				<div class="form-check form-check-inline">
