@@ -169,6 +169,14 @@ class InstallerRouter extends GenericRouter
             $ret=$this->validateForm($step, $params, $validator);
             return $ret;
             break;
+        case 5: // logger
+            $validator->add('adminInputLoggerName', 'required | AlphaNumHyphen | length(1,16)'); // Logger channel name
+            $validator->add('adminInputLoggerDateFormat', 'required | length(1,32)'); // Logger date format
+            $validator->add('adminInputLoggerLogFormat', 'required | length(1,128)'); // Logger log format
+            $validator->add('adminInputLoggerLevel', [['required'], ['Regex', '/^(DEBUG|INFO|NOTICE|WARNING|ERROR|CRITICAL|ALERT|EMERGENCY)$/']]); // Logger channel name
+            $ret=$this->validateForm($step, $params, $validator);
+            return $ret;
+            break;
         default:
             throw new \Exception("step \"$step\" not implemented");
             break;
@@ -333,6 +341,18 @@ class InstallerRouter extends GenericRouter
             $this->smarty->assign('defaultlcatsamesite', "Strict");
             
             $this->smartyRender($response, 'installstep4_login.tpl');
+            break;
+        case 5:
+            // default logger channel name
+            $this->smarty->assign('defaultloggername', 'FrontSkel');
+            // default logger date format
+            $this->smarty->assign('defaultloggerdateformat', 'Y-m-d H:i:s');
+            // default logger log format
+            $this->smarty->assign('defaultloggerlogformat', '%datetime% [%channel%.%level_name% %extra%] %message%\n');
+            // default logger level
+            $this->smarty->assign('defaultloggerlevel', 'INFO');
+            
+            $this->smartyRender($response, 'installstep5_logger.tpl');
             break;
         default:
             $msg="User requested install step ".$step." but this is not valid here";
