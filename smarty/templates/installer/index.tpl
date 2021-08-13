@@ -5,7 +5,7 @@
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
       <h1 class="display-4"><span class="far fa-hdd"></span> Welcome to the FrontSkel installer!!</h1>
-      <p class="lead">FrontSkel is a simple microframework written in PHP based on bootstrap, jquery, fontawesome, slim, PHP-DI, smarty, monolog, composer
+      <p class="lead">FrontSkel is a simple microframework written in PHP based on bootstrap, fontawesome, slim, PHP-DI, smarty, monolog, composer
         and other cool stuff that will make your frontend web development startup easier.</p>
       <hr class="my-4">
       <p>Now we will ask you some informations to get the software ready to run. You can go backwards and forwards as you like.</p>

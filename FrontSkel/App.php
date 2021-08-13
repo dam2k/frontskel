@@ -38,8 +38,8 @@ use Slim\Handlers\Strategies\RequestResponse;
 
 class App
 {
-    private Container $c; // our container
-    private \Slim\App $slimapp; // our application instance
+    protected Container $c; // our container
+    protected \Slim\App $slimapp; // our application instance
     
     /**
      * Initialize the dependency injection container and all its definitions
@@ -172,9 +172,9 @@ class App
     }
     
     /**
-     * Setup routing
+     * Setup routing - user should extend this class and override this method with its personal slim routers
      */
-    private function setupRouting(): void {
+    protected function setupRouting(): void {
         // http://www.slimframework.com/docs/v4/objects/routing.html
         // FRONTEND
         // NOTE: middlewares are executed in reverse order! last mw <<< mw <<< mw <<< first mw
@@ -203,14 +203,6 @@ class App
     #    $this->slimapp->get('/favicon.ico', [InstallerRouter::class, 'getFavicon'])->setName('getfavicon');
     #    $this->slimapp->map(['GET', 'POST'], '/install[/{step}]', [InstallerRouter::class, 'GETSlashInstall'])->setName('getslashinstall');
     #}
-    
-    /**
-     * Run the application
-     */
-    private function run(): void {
-        // Run the application
-        $this->slimapp->run();
-    }
     
     // config file must be a valid PHP-DI PHP configuration file: https://php-di.org/doc/php-definitions.html
     public function __construct(String $config) {
@@ -262,6 +254,7 @@ class App
             $this->setupRoutingInstaller();
         }*/
         
-        $this->run();
+        // run the application
+        $this->slimapp->run();
     }
 }
