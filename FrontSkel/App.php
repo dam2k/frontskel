@@ -40,7 +40,6 @@ class App
 {
     private Container $c; // our container
     private \Slim\App $slimapp; // our application instance
-    //private array $csrfarr;
     
     /**
      * Initialize the dependency injection container and all its definitions
@@ -157,9 +156,6 @@ class App
         /*
         // CSRF --> https://github.com/slimphp/Slim-Csrf
         $responseFactory = $this->slimapp->getResponseFactory();
-        $guard = new Guard($responseFactory, 'csrf', $this->csrfarr);
-        $this->c->set(Guard::class, $guard);
-        $this->slimapp->add($guard);
         */
         
         // 4) Error handlers
@@ -200,13 +196,13 @@ class App
      * Setup routing (Installer)
      * https://www.slimframework.com/docs/v4/objects/routing.html
      */
-    private function setupRoutingInstaller(): void {
-        // http://www.slimframework.com/docs/v4/objects/routing.html
-        // NOTE: middlewares are executed in reverse order! last mw <<< mw <<< mw <<< first mw
-        $this->slimapp->get('/', [InstallerRouter::class, 'GETSlash'])->setName('getslash');
-        $this->slimapp->get('/favicon.ico', [InstallerRouter::class, 'getFavicon'])->setName('getfavicon');
-        $this->slimapp->map(['GET', 'POST'], '/install[/{step}]', [InstallerRouter::class, 'GETSlashInstall'])->setName('getslashinstall');
-    }
+    #private function setupRoutingInstaller(): void {
+    #    // http://www.slimframework.com/docs/v4/objects/routing.html
+    #    // NOTE: middlewares are executed in reverse order! last mw <<< mw <<< mw <<< first mw
+    #    $this->slimapp->get('/', [InstallerRouter::class, 'GETSlash'])->setName('getslash');
+    #    $this->slimapp->get('/favicon.ico', [InstallerRouter::class, 'getFavicon'])->setName('getfavicon');
+    #    $this->slimapp->map(['GET', 'POST'], '/install[/{step}]', [InstallerRouter::class, 'GETSlashInstall'])->setName('getslashinstall');
+    #}
     
     /**
      * Run the application
@@ -218,15 +214,16 @@ class App
     
     // config file must be a valid PHP-DI PHP configuration file: https://php-di.org/doc/php-definitions.html
     public function __construct(String $config) {
-        $installing=false;
-        //$this->csrfarr=array();
-        try {
+        //$installing=false;
+        //try {
             $this->c = $this->initializeContainer($config);
-        } catch(\FrontSkel\Exceptions\ConfigNotValidException $e) { // cannot open config file
+        //} catch(\FrontSkel\Exceptions\ConfigNotValidException $e) { // cannot open config file
+            /*
             $installing=true;
             $this->c = $this->initializeContainer('../etc/config_install.php');
             $this->c->set('configFileNew', $config);
-        }
+            */
+        //}
         $this->slimapp = Bridge::create($this->c); // use slim-bridge to create the slim app: https://php-di.org/doc/frameworks/slim.html
         if(substr($this->c->get('settings')['basePath'], -1) == '/') { // fuck! I said in the config comment to not put a trailing slash, even if basepath is / !!!
             $msg='Please remove trailing slash from basePath parameter in config file!!';
@@ -259,15 +256,12 @@ class App
         $routeCollector->setDefaultInvocationStrategy(new RequestResponse());
         $routeCollector->setCacheFile(__DIR__ . '/../tmp/routercache.tmp');
         
-        if(!$installing) {
-            $this->setupRouting();
-        } else  {
+        //if(!$installing) {
+        $this->setupRouting();
+        /*} else  {
             $this->setupRoutingInstaller();
-        }
+        }*/
         
         $this->run();
-        
-        //print_r($this->csrfarr);
     }
 }
-
