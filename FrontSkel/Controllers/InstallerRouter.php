@@ -177,6 +177,9 @@ class InstallerRouter extends GenericRouter
             $ret=$this->validateForm($step, $params, $validator);
             return $ret;
             break;
+        case 6: // // end
+            return $ret;
+            break;
         default:
             throw new \Exception("step \"$step\" not implemented");
             break;
@@ -322,7 +325,7 @@ class InstallerRouter extends GenericRouter
             
             $this->smartyRender($response, 'installstep3_tokens.tpl');
             break;
-        case 4:
+        case 4: // login cookie
             // default login cookie name
             $this->smarty->assign('defaultlcname', '_FSlogin');
             // default login cookie key
@@ -342,7 +345,7 @@ class InstallerRouter extends GenericRouter
             
             $this->smartyRender($response, 'installstep4_login.tpl');
             break;
-        case 5:
+        case 5: // logger
             // default logger channel name
             $this->smarty->assign('defaultloggername', 'FrontSkel');
             // default logger date format
@@ -353,6 +356,32 @@ class InstallerRouter extends GenericRouter
             $this->smarty->assign('defaultloggerlevel', 'INFO');
             
             $this->smartyRender($response, 'installstep5_logger.tpl');
+            break;
+        case 6: // end
+            // TODO: finish this one
+            $all_params=[];
+            for($i=$step; $i>0; $i--) {
+                try {
+                    $all_params[]=(array)json_decode(
+                        EncryptedCookies::decryptCookie(
+                            $request,
+                            $this->c->get('settings')['cookies']['prefixnamebystep'].$i,
+                            $this->c->get('settings')['cookies']['key'],
+                            $this->c->get('settings')['cookies']['salt'],
+                        )
+                    );
+                } catch(\Exception $e) { // cannot get cookie for the given step
+                    $this->log->debug("Step cookie ".$this->c->get('settings')['cookies']['prefixnamebystep'].$i." is not there or is not valid");
+                    EncryptedCookies::unsetEncryptedCookie(
+                        $response,
+                        $this->c->get('settings')['cookies']['prefixnamebystep'].$i,
+                        $this->c->get('settings')['cookies']['cookieopts']
+                    );
+                }
+            }
+            
+            $this->smarty->assign('all_params', $all_params);
+            $this->smartyRender($response, 'installstep6_finalcheck.tpl');
             break;
         default:
             $msg="User requested install step ".$step." but this is not valid here";
