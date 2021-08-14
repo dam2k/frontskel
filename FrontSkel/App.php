@@ -50,8 +50,11 @@ class App
             throw new ConfigNotValidException("The configuration file \"$config\" cannot be found or read");
         }
         $builder = new \DI\ContainerBuilder();
-        $builder->enableCompilation(__DIR__ . '/../tmp');
-        $builder->writeProxiesToFile(true, __DIR__ . '/../tmp/proxies');
+	// load the config file to get the tmpDir
+	$allsettings=require($config);
+        $builder->enableCompilation($allsettings['settings']['tmpDir']);
+	$builder->writeProxiesToFile(true, $allsettings['settings']['tmpDir'].'/proxies');
+	unset($allsettings);
         // application configuration file using PHP-DI PHP configuration format (https://php-di.org/doc/php-definitions.html)
         $builder->addDefinitions($config);
         
@@ -246,7 +249,7 @@ class App
         
         $routeCollector = $this->slimapp->getRouteCollector();
         $routeCollector->setDefaultInvocationStrategy(new RequestResponse());
-        $routeCollector->setCacheFile(__DIR__ . '/../tmp/routercache.tmp');
+        $routeCollector->setCacheFile($this->c->get('settings')['tmpDir'].'/routercache.tmp');
         
         //if(!$installing) {
         $this->setupRouting();
