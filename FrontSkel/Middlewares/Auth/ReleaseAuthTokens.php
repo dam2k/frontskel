@@ -18,7 +18,7 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection;
-use FrontSkel\User\User;
+use FrontSkel\Users\User;
 use FrontSkel\Middlewares\Auth\CheckEmailPwd;
 use FrontSkel\Middlewares\GenericMiddleware;
 use FrontSkel\User\Token\RefreshToken;
