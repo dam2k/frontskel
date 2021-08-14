@@ -1,7 +1,6 @@
 <?php
 // vim: expandtab:ts=4:sw=4
 
-
 /**
  * FrontSkel: PHP slim based micro framework and WEB frontend
  * License: MIT

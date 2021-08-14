@@ -7,6 +7,8 @@
  * Author: Dino Ciuffetti <dam2000@gmail.com>
  */
 
+// TODO: the Users class should be extended to use LDAP, DB, REST SERVICE, etc. Work on this.
+
 declare(strict_types=1);
 
 namespace FrontSkel\Users;
