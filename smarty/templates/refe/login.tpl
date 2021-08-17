@@ -22,11 +22,11 @@
 
             <form class="p-4 p-md-4 border rounded-3 bg-light mb-3" method="post" action="{$basePath}/login">
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="inputEmail" placeholder="name@example.com">
+                <input type="email" class="form-control" name="inputEmail" id="inputEmail" placeholder="name@example.com">
                 <label for="inputEmail">Email address</label>
               </div>
               <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+                <input type="password" class="form-control" name="inputPassword" id="inputPassword" placeholder="Password">
                 <label for="inputPassword">Password</label>
               </div>
               <div class="checkbox mb-3">

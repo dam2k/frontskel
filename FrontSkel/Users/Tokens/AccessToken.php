@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace namespace FrontSkel\Users\Tokens;
+namespace FrontSkel\Users\Tokens;
 
 use Psr\Container\ContainerInterface;
 use Firebase\JWT\JWT;
