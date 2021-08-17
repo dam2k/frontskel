@@ -13,7 +13,6 @@ namespace FrontSkel\Users\Tokens;
 
 use Psr\Container\ContainerInterface;
 use Firebase\JWT\JWT;
-use namespace FrontSkel\Users\Tokens\RefreshToken;
 
 class TokenHandler
 {
