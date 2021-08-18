@@ -4,7 +4,8 @@
 /**
  * Author: Dino Ciuffetti <dam2000@gmail.com>
  * Date: 2020-10-22
- * Note: This middleware checks if a valid auth token is present into the auth cookie (also checks if the cookie is present)
+ * Note: This middleware checks if a valid auth token is present into the auth cookie (also checks if the cookie is present).
+ *       The request attribute CheckValidAuthToken::class:uid is setted to reflect the user's UID (if any) or empty instead.
  */
 
 declare(strict_types=1);
@@ -20,18 +21,14 @@ use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection;
 use FrontSkel\Users\User;
 use FrontSkel\Middlewares\GenericMiddleware;
-//use FrontSkel\User\Token\RefreshToken;
-
 
 class CheckValidAuthToken extends GenericMiddleware implements MiddlewareInterface
 {
     private ContainerInterface $c;
-    //private LoggerInterface $log;
     private Connection $authdb;
     
     public function __construct(ContainerInterface $c, LoggerInterface $log) {
         $this->c = $c;
-        //$this->log = $log;
         $this->authdb = $this->c->get('AuthDbConnection'); // cannot autowire AuthDbConnection on the constructor. Getting here from the DI
         parent::__construct($log);
     }
@@ -40,10 +37,8 @@ class CheckValidAuthToken extends GenericMiddleware implements MiddlewareInterfa
      * check auth tokens inside auth cookie (if any)
      */
     public function process(Request $request, RequestHandler $handler): Response {
-        //$uid=(string)$request->getAttribute(CheckEmailPwd::class.':uid');
         $this->log->debug("Checking Login Auth Cookie");
         $user=new User($this->c, $this->authdb);
-        //$response = new \Slim\Psr7\Response;
         try {
             $newcookie=0; $tokens=[];
             $at=$user->getLoginCookie($request, $tokens, $newcookie);
