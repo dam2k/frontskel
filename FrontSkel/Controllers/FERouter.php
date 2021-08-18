@@ -95,7 +95,11 @@ class FERouter extends GenericRouter
     public function POSTLogin(Request $request, Response $response): Response {
         // Route middleware CheckEmailPwd returned attribute
         $this->requireSmarty();
-        if(!$request->getAttribute(CheckEmailPwd::class.':validCredentials')) $this->smarty->assign('wronglogin', true);
+	if(!$request->getAttribute(CheckEmailPwd::class.':validCredentials')) {
+		$this->smarty->assign('wronglogin', true);
+	} else {
+		$this->smarty->assign('wronglogin', false);
+	}
         
         $uid=(string)$request->getAttribute(CheckEmailPwd::class.':uid');
         $response=$this->redirectUserToSlashIfValidUID($response, $uid);
