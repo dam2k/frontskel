@@ -43,13 +43,7 @@ class FERouter extends GenericRouter
      * GET /
      */
     public function GETSlash(Request $request, Response $response): Response {
-        /*
-        $nameKey = $this->csrf->getTokenNameKey();
-        $valueKey = $this->csrf->getTokenValueKey();
-        $name = $request->getAttribute($nameKey);
-        $value = $request->getAttribute($valueKey);
-        $this->log->info("CSRF data: nameKey: $nameKey, name: $name, valueKey: $valueKey, value: $value");
-        */
+	// CheckValidAuthToken mw get the login cookie from the request (if any), then retrieves and checks the tokens (if valid). It also updates the cookie.
         $uid=(string)$request->getAttribute(CheckValidAuthToken::class.':uid');
         if($uid) {
             $this->log->info("Valid uid in request route: $uid (user logged in)");
