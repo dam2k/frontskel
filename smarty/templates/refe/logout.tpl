@@ -21,7 +21,7 @@
                 <a href="{$basePath|default:'/'}" class="w-100 btn btn-lg btn-primary"><span class="glyphicon glyphicon-home"></span>Take Me Home</a>
               </div>
               <hr class="my-4">
-              <small class="text-muted">Good bye my fiend. Come back soon.</small>
+              <small class="text-muted">Good bye my friend. Come back soon.</small>
             </form>
           </div>
         </div>

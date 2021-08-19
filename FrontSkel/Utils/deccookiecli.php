@@ -10,18 +10,16 @@
 
 declare(strict_types=1);
 
-namespace FrontSkel;
+namespace FrontSkel\Utils;
 
-use Utils\StringCrypt;
 use \Firebase\JWT\JWT;
 
 // autoload provided by composer
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
+$conf=require(__DIR__ . '/etc/config.php');
 
-$cookievalue='Dc09spNAAADg8QCWNo43oAh/IcSOsEAg7EKQn7ztCNkNIYGXBR5kKZ6dr3jjGaycsdXSXsfOk3gAO/0u8LlfPj/+evHq69Ob5ctL1i6imk7VQ76yVk5zm3eQMS9xIgSJH/vnRF3gvX2zjDOIUTI1t6YXhNUpPVKv8HjCTkxy1MCZ5l59GCNNYcvNAxVNS7nz9HDasvi0X4yzbbpxjNpSK3rPyRViWmqq4Wq5sib/WxWb8a1rK0DykBijorVmEvWZfi0d5SIQBy8PtiVXkVRcxUKKJha6KQwplEdZnCGxW/maSCnkhTzBU6DCrt1MJIzXAlaRHqA51mFzWSx9mzXqTHEjI0nqo1sGEhcMvt8UpkcOpWicikwFEiJlVAXdjN7jCMZtwIUxNIeGBF09Ep73O5RfzDkf6gO46qzPba5k5tytpxjTGgJhpKTnZW5oZN3d+LEezhkAmeMDb2EEK/m8tvVdywoWyqgAW20offMyMssdAkdvQYumIgPnFNpoeZTYO4pMENXJhhKQYjn05bsd5gKWoBTvaRXOjsUV5fagvn3/6Tf4+efb6+8f0r/PPz7Cfw==';
+$cookievalue='BcG7spNAAABQK//DxhmHYnksG+KMOiFA7uW1EDYkpOMRIATCM8DyT/cX7Gxv79xCKz/AytJzXt99ePv7LH16eY2/3RURuKAcrh1Ek80ajDQhlEiksRZh2vcJVG4HlqPRhrkE/HhsloeuV0HegKrzYzE/Yo6r2QiTsfaeJW0hautWDwjr9Uxjl4HZmlVOqnEe/Zyx7XQnoOTWPOmP1KuLki4Badks64rN87k6GIIDV65oyHdz4wMvJT3mXE5qunSKlGDlYv7RnuQ8Pjj9TVPiLLJ60eABd5jQrexW1pZPGEbRdtOgnvgZH+ecyuK4lUE4p8Sby5YtOU8eALmA64reKEZz88CSKaA2uIICXfxeHGEuOR71qHCN4iAlaiNKUmtNG51bDr2MYAgLfwk4R/E0p2OWCxiHDlcpnGpKw2ywRswsGkMhjxNPEI5KsVtC3qnEMu11x4jzgU+OcYIbrR4FpYCqMWtbx+1DE64js7K7E4c7n4xsADIwzaZN0NNZ22/KcOElC94npSf1qdq2cWb6LS5VW9sDR6/C0GO/fH7v/iJff8Ifv//9eUMfv7/8Bw==';
 
-
-$conf=require(__DIR__ . '/../../etc/config.php');
 $cipher="aes-128-gcm";
 $hashalg="blake2b512";
 $key=$conf['settings']['login_cookie']['key'];
