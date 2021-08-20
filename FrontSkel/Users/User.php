@@ -7,8 +7,6 @@
  * Author: Dino Ciuffetti <dam2000@gmail.com>
  */
 
-// TODO: the Users class should be extended to use LDAP, DB, REST SERVICE, etc. Work on this.
-
 declare(strict_types=1);
 
 namespace FrontSkel\Users;
@@ -85,7 +83,7 @@ Class User
         
         // save the refresh token inside re_auth.tokens table so that it can always be revoked
         try {
-            $this->log->info("Saving refresh token into DB");
+            $this->log->notice("Saving refresh token into DB (jti: ".$rto->getToken()->jti.")");
             $rc = $this->db->executeStatement('INSERT INTO '.TBL_TOKENS.' (id, users_id, jti, token, released, expiration, revoked, revocation_time) VALUES (NULL, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? SECOND), 0, NULL)', array($uid, $rto->getToken()->jti, $rtjwt, $rt_expire));
             if($rc!=1) {
                 $this->log->warning("Cannot save refresh token into DB");
@@ -133,7 +131,7 @@ Class User
         $this->log->debug("JWT Access token: $atjwt");
         $dt = new \DateTime("@$cookie_expire", new \DateTimeZone('UTC')); // convert UNIX timestamp to PHP DateTime
         $dt->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-        $this->log->debug("Login Cookie expiration: ".$dt->format('Y-m-d H:i:s'));
+        $this->log->info("Login Cookie expiration: ".$dt->format('Y-m-d H:i:s'));
         // rt: refresh token; at: access token; ca: cookie attributes
         $tokens=array('rt'=>$rtjwt, 'at'=>$atjwt, 'ca'=>$cookieOpts);
         $cleartext=json_encode($tokens);
@@ -153,7 +151,7 @@ Class User
         $this->log->debug("JWT Access token: $atjwt");
         $dt = new \DateTime("@".$cookieOpts['expires'], new \DateTimeZone('UTC')); // convert UNIX timestamp to PHP DateTime
         $dt->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-        $this->log->debug("Login Cookie expiration: ".$dt->format('Y-m-d H:i:s'));
+        $this->log->info("Login Cookie expiration: ".$dt->format('Y-m-d H:i:s'));
         $cleartext=json_encode($tokens);
         EncryptedCookies::setEncryptedCookie($response, $this->c->get('settings')['login_cookie']['cookiename'], $cleartext, $this->c->get('settings')['login_cookie']['key'], $this->c->get('settings')['login_cookie']['salt'], $cookieOpts);
     }
@@ -181,11 +179,9 @@ Class User
             $tho = new TokenHandler($this->c); // type: TokenHandler
                 $tho->loadRefreshTokenFromJWT($rtjwt);
                 $rto=$tho->getRefreshToken();
-                $err="JWT Refresh token (jti: ".$rto->getToken()->jti.") is valid. Revoking it.";
-                $this->log->debug($err);
                 // revoke the refresh token
                 try {
-                    $this->log->info("Revoke refresh token in DB (jti: ".$rto->getToken()->jti.")");
+                    $this->log->info("Revoke valid refresh token in DB (jti: ".$rto->getToken()->jti.")");
                     $rc = $this->db->executeStatement('UPDATE '.TBL_TOKENS.' SET revoked=?, revocation_time=NOW() WHERE jti=?', array(1, $rto->getToken()->jti));
                     if($rc!=1) {
                         $this->log->warning("Cannot save refresh token revocation into DB (jti: ".$rto->getToken()->jti.")");
@@ -193,6 +189,7 @@ Class User
                 } catch (\Exception $e) {
                     $this->log->warning("Cannot save refresh token revocation into DB (jti: ".$rto->getToken()->jti."): ".$e->getMessage());
                 }
+                $this->log->notice("Refresh token revoked (jti: ".$rto->getToken()->jti.")");
             } catch (\Exception $e) {
                 $this->log->warning("Wanted to drop the refresh token but not a valid refresh token was found");
             }

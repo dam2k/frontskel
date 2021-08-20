@@ -46,7 +46,7 @@ class DropAuthToken extends GenericMiddleware implements MiddlewareInterface
         */
         $user=new User($this->c, $this->authdb);
         $response = $handler->handle($request);
-        $this->log->info("Drop login cookie and revoke refresh token to log the user out");
+        $this->log->debug("Drop login cookie and revoke refresh token to log the user out");
         $user->dropLoginCookie($response, true, $request);
         
         return $response;

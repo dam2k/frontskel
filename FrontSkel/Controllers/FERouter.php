@@ -46,10 +46,11 @@ class FERouter extends GenericRouter
 	// CheckValidAuthToken mw get the login cookie from the request (if any), then retrieves and checks the tokens (if valid). It also updates the cookie.
         $uid=(string)$request->getAttribute(CheckValidAuthToken::class.':uid');
         if($uid) {
-            $this->log->info("Valid uid in request route: $uid (user logged in)");
+            $this->log->notice("Valid uid in request route: $uid (user logged in)");
         } else {
-            $this->log->info("NOT valid uid in request route (user not logged in). Redirecting to /login");
-            return $response->withHeader('Location', $this->c->get('settings')['basePath'].'/login')->withStatus(302);
+            $this->log->notice("NOT valid uid in request route (user not logged in)");
+            //return $response->withHeader('Location', $this->c->get('settings')['basePath'].'/login')->withStatus(302);
+            return $this->redirectUser($response, '/login');
         }
         
         $this->requireSmarty();
@@ -63,8 +64,9 @@ class FERouter extends GenericRouter
      */
     private function redirectUserToSlashIfValidUID(Response $response, $uid): Response {
         if($uid) {
-            $this->log->info("Valid uid in request route: $uid (user logged in). Redirecting to /");
-            return $response->withHeader('Location', $this->c->get('settings')['basePath'].'/')->withStatus(302);
+            $this->log->notice("Valid uid in request route: $uid (user logged in)");
+            //return $response->withHeader('Location', $this->c->get('settings')['basePath'].'/')->withStatus(302);
+            return $this->redirectUser($response, '/');
         } else {
             $this->log->info("NOT valid uid in request route (user not logged in)");
         }

@@ -43,7 +43,7 @@ class RequestLogger extends GenericMiddleware implements MiddlewareInterface
     public function process(Request $request, RequestHandler $handler): Response {
         $clientip=$this->extractIpAddress($request->getServerParams()['REMOTE_ADDR']);
         $request = $request->withAttribute(self::class . "-ClientIP", $clientip);
-        $this->log->info("[$clientip] ".$request->getMethod().' '.$request->getUri()->getPath());
+        $this->log->notice("[$clientip] ".$request->getMethod().' '.$request->getUri()->getPath());
         
         $response = $handler->handle($request);
         return $response;
