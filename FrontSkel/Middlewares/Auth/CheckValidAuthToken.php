@@ -39,6 +39,12 @@ class CheckValidAuthToken extends GenericMiddleware implements MiddlewareInterfa
     public function process(Request $request, RequestHandler $handler): Response {
         $this->log->debug("Checking Login Auth Cookie");
         $user=new User($this->c, $this->authdb);
+	if(!$user->isLoginCookiePresent($request)) {
+            $this->log->debug("Login cookie is not present. Brand new request or very old (expired)");
+            $request = $request->withAttribute(self::class.':uid', ''); // no uid
+            $response = $handler->handle($request); // continue to process next middlewares
+            return $response;
+	}
         try {
             $newcookie=0; $tokens=[];
             $at=$user->getLoginCookie($request, $tokens, $newcookie);
