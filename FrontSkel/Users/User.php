@@ -207,6 +207,13 @@ Class User
     }
     
     /**
+     * Check if login cookie is present in the request
+     */
+    public function isLoginCookiePresent(Request $request): bool {
+        return EncryptedCookies::isCookiePresent($request, $this->c->get('settings')['login_cookie']['cookiename']);
+    }
+
+    /**
      * get encrypted cookie used to login. Internally it uses a refresh and an access token to do the job
      * $tokens is returned by address
      * $newcookie is setted to 1 if needs to be resubmitted.
