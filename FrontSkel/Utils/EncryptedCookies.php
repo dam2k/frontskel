@@ -119,7 +119,19 @@ Class EncryptedCookies
         if(!$cookievalue) throw new \Exception("Requested cookie (\"$cookiename\") does not exist");
         return $cookievalue;
     }
-    
+
+    /**
+     * check if requested cookie is present in the request
+     */
+    public static function isCookiePresent(Request $request, string $cookiename): bool {
+        if(!isset(self::$requestcookies)) self::getRequestCookies($request);
+	if(self::$requestcookies->get($cookiename)) {
+            return true;
+	} else {
+            return false;
+	}
+    }
+
     /**
      * Decrypt an encrypted cookie
      */
