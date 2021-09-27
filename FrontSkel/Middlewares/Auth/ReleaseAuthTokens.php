@@ -38,7 +38,7 @@ class ReleaseAuthTokens extends GenericMiddleware implements MiddlewareInterface
     }
     
     /**
-     * release authentication token. Validity is long if rememberMe input was selected by the user
+     * release authentication token. Validity is longer if rememberMe input was selected by the user
      */
     public function process(Request $request, RequestHandler $handler): Response {
         if(!$request->getAttribute(CheckEmailPwd::class.':validCredentials')) { // invalid login from the previous middleware
@@ -49,8 +49,9 @@ class ReleaseAuthTokens extends GenericMiddleware implements MiddlewareInterface
         $params=(array)$request->getParsedBody();
         $rememberMe=""; if(isset($params['rememberMe'])) $rememberMe=$params['rememberMe']; // value is "1" only if selected by the user
         $uid=(string)$request->getAttribute(CheckEmailPwd::class.':uid');
+        $pid=(string)$request->getAttribute(CheckEmailPwd::class.':pid');
         $request = $request->withAttribute(self::class.':uid', $uid);
-        $this->log->info("Releasing login cookie for uid $uid (rememberme: ".($rememberMe ? 1 : 0).")");
+        $this->log->info("Releasing login cookie for uid:$uid, pid:$pid, rememberme:".($rememberMe ? 1 : 0));
         //$cookieOpts=$this->c->get('settings')['login_cookie']['cookieopts'];
         $cookieOpts=[];
         if($rememberMe) { // let login cookie expiring with refresh token
@@ -61,7 +62,7 @@ class ReleaseAuthTokens extends GenericMiddleware implements MiddlewareInterface
         
         $response = $handler->handle($request); // continue to process next middlewares
         $user=new User($this->c, $this->authdb);
-        $user->setLoginCookie($response, $uid, $expire, $cookieOpts);
+        $user->setLoginCookie($response, $uid, $pid, $expire, $cookieOpts);
         return $response;
     }
 }

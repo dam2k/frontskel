@@ -39,25 +39,21 @@ class CheckValidAuthToken extends GenericMiddleware implements MiddlewareInterfa
     public function process(Request $request, RequestHandler $handler): Response {
         $this->log->debug("Checking Login Auth Cookie");
         $user=new User($this->c, $this->authdb);
-	if(!$user->isLoginCookiePresent($request)) {
-            $this->log->debug("Login cookie is not present. Brand new request or very old (expired)");
-            $request = $request->withAttribute(self::class.':uid', ''); // no uid
-            $response = $handler->handle($request); // continue to process next middlewares
-            return $response;
-	}
         try {
             $newcookie=0; $tokens=[];
             $at=$user->getLoginCookie($request, $tokens, $newcookie);
             //print_r($at); --> stdClass Object ( [iss] => auth server [aud] => access [sub] => 1 [iat] => 1603405637 [nbf] => 1603405604 [exp] => 1603405970 ) 
             $uid=$at->sub;
-            $this->log->info("Login cookie and auth tokens valid. uid: $uid");
-            $request = $request->withAttribute(self::class.':uid', $uid); // uid is valid
+	    $pid=$at->pid;
+            $this->log->info("Login cookie and auth tokens valid. uid:$uid, pid:$pid");
+            $request = $request->withAttribute(self::class.':uid', $uid); // uid
+            $request = $request->withAttribute(self::class.':pid', $pid); // pid
             if($newcookie) { // $newcookie is passed by address by getLoginCookie, and it's updated if the access token inside the cookie has changed
                 $response = $handler->handle($request); // continue to process next middlewares
                 $this->log->debug("Since the access token has changed, we need to release the updated cookie");
                 //$cookieOpts=$this->c->get('settings')['login_cookie']['cookieopts'];
                 $cookieOpts=[];
-                $user->updateLoginCookie($response, $uid, $tokens, $cookieOpts);
+                $user->updateLoginCookie($response, $uid, $pid, $tokens, $cookieOpts);
                 return $response;
             }
         } catch (\Exception $e) {

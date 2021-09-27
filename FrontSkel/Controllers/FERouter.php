@@ -18,6 +18,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use FrontSkel\Middlewares\Auth\CheckEmailPwd;
 use FrontSkel\Middlewares\Auth\CheckValidAuthToken;
+//use FrontSkel\Users\User;
 
 class FERouter extends GenericRouter
 {
@@ -54,7 +55,15 @@ class FERouter extends GenericRouter
         }
         
         $this->requireSmarty();
+	$this->smarty->caching = false;
+	/*
+        $user=new User($this->c, $this->c->get('AuthDbConnection'));
+        $profile=$user->getUidProfile((int)$uid);
+        $this->smarty->assign('profile', $profile);
+	*/
         $this->smarty->assign('uid', $uid);
+        $pid=(string)$request->getAttribute(CheckValidAuthToken::class.':pid');
+        $this->smarty->assign('pid', $pid);
         $response->GETBody()->write($this->smarty->fetch('index.tpl'));
         return $response;
     }
@@ -89,7 +98,7 @@ class FERouter extends GenericRouter
      * POST /login
      */
     public function POSTLogin(Request $request, Response $response): Response {
-        // Route middleware CheckEmailPwd returned attribute
+        // Route middleware CheckEmailPwd returned attributes
         $this->requireSmarty();
 	if(!$request->getAttribute(CheckEmailPwd::class.':validCredentials')) {
 		$this->smarty->assign('wronglogin', true);
@@ -98,6 +107,7 @@ class FERouter extends GenericRouter
 	}
         
         $uid=(string)$request->getAttribute(CheckEmailPwd::class.':uid');
+        //$pid=(string)$request->getAttribute(CheckEmailPwd::class.':pid');
         $response=$this->redirectUserToSlashIfValidUID($response, $uid);
         $response->getBody()->write($this->smarty->fetch('login.tpl'));
         return $response;

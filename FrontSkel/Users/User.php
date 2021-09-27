@@ -56,28 +56,48 @@ Class User
     
     /**
      * Check if email and password pair match.
-     * Return -2 if users is not enabled, -1 if email does not exist, 0 if email/pwd are bad, user id (>0) if credentials are valid
+     * On errors, return array with this structure: [0]=>-2 if users is not enabled, [0]=>-1 if email does not exist, [0]=>0 if email/pwd are bad
+     * On success, return array with this structure: [0]=>uid (>0); [1]=>profile;
      */
-    public function checkEmailPwd(string $email, string $pwd): int {
-        $sql = "SELECT id, pwdhash, state FROM ".TBL_USERS." WHERE email = :email";
+    public function checkEmailPwd(string $email, string $pwd): array {
+        $sql = "SELECT id, profile, pwdhash, state FROM ".TBL_USERS." WHERE email = :email";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue("email", $email);
         $result=$stmt->execute();
         $row=$result->fetchAssociative();
-        if(!$row) return -1; // wrong email
-        if(!$row['state']=="ENABLED") return -2;
-        if(!$this->verifyHashedPwd($pwd, $row['pwdhash'])) return 0; // wrong password
+        if(!$row) return array(0=>-1); // wrong email
+        if($row['state']!="ENABLED") return array(0=>-2);
+        if(!$this->verifyHashedPwd($pwd, $row['pwdhash'])) return array(0=>0); // wrong password
         // map DB $row['id'] field value type to PHP integer scalar type
-        return \Doctrine\DBAL\Types\Type::getType('integer')->convertToPhpValue($row['id'], $this->db->getDatabasePlatform());
+	return array(
+            0=>\Doctrine\DBAL\Types\Type::getType('integer')->convertToPhpValue($row['id'], $this->db->getDatabasePlatform()),
+	    1=>\Doctrine\DBAL\Types\Type::getType('integer')->convertToPhpValue($row['profile'], $this->db->getDatabasePlatform())
+	);
+    }
+    
+    /**
+     * Get user profile from database given valid uid
+     * Return -2 if users is not enabled, -1 if uid does not exist, profile id (>=0) if uid is valid
+     */
+    public function getUidProfile(int $uid): int {
+        $sql = "SELECT profile, state FROM ".TBL_USERS." WHERE id = :uid";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue("uid", $uid);
+        $result=$stmt->execute();
+        $row=$result->fetchAssociative();
+        if(!$row) return -1; // wrong email
+        if($row['state']!="ENABLED") return -2;
+        // map DB $row['profile'] field value type to PHP integer scalar type
+        return \Doctrine\DBAL\Types\Type::getType('integer')->convertToPhpValue($row['profile'], $this->db->getDatabasePlatform());
     }
     
     /**
      * generate and save refresh token to DB
      */
-    private function generateAndSaveRefreshToken(string $uid, int $rt_expire): RefreshToken {
+    private function generateAndSaveRefreshToken(string $uid, string $pid, int $rt_expire): RefreshToken {
         // generate refresh token using $uid as subject
         $tho = new TokenHandler($this->c); // type: TokenHandler
-        $tho->generateRefreshToken($uid);
+        $tho->generateRefreshToken($uid, array('pid'=>$pid));
         $rto = $tho->getRefreshToken(); // type: RefreshToken
         $rtjwt = $rto->getTokenJWT();
         
@@ -101,7 +121,7 @@ Class User
      * if expire = 0 set the cookie expiring on browser close
      * if expire > 0 set the cookie and the refresh token expiration time manually
      */
-    public function setLoginCookie(Response &$response, string $uid, int $expire=-1, array $cookieOpts=[]): void {
+    public function setLoginCookie(Response &$response, string $uid, string $pid, int $expire=-1, array $cookieOpts=[]): void {
         // return TokenHandler object
         $tho = new TokenHandler($this->c); // type: TokenHandler
         if($expire==0) { // cookie expires on browser close, RT expires based on config settings
@@ -120,7 +140,7 @@ Class User
         $myCookieOpts['expires']=$cookie_expire; // set cookie expiration
         $cookieOpts=array_merge($myCookieOpts, $cookieOpts);
         
-        $rto=$this->generateAndSaveRefreshToken($uid, $rt_expire);
+        $rto=$this->generateAndSaveRefreshToken($uid, $pid, $rt_expire);
         $rtjwt = $rto->getTokenJWT();
         
         // generate access token from refresh token
@@ -155,7 +175,7 @@ Class User
         $cleartext=json_encode($tokens);
         EncryptedCookies::setEncryptedCookie($response, $this->c->get('settings')['login_cookie']['cookiename'], $cleartext, $this->c->get('settings')['login_cookie']['key'], $this->c->get('settings')['login_cookie']['salt'], $cookieOpts);
     }
-    
+
     /**
      * get tokens from login cookie
      */
@@ -212,7 +232,7 @@ Class User
     public function isLoginCookiePresent(Request $request): bool {
         return EncryptedCookies::isCookiePresent($request, $this->c->get('settings')['login_cookie']['cookiename']);
     }
-
+    
     /**
      * get encrypted cookie used to login. Internally it uses a refresh and an access token to do the job
      * $tokens is returned by address
@@ -268,11 +288,12 @@ Class User
             if(($auto_refresh > 0) && ($seconds2expire>0) && (($seconds2expire-$auto_refresh)<0)) {
                 // generate a new refresh token
                 $uid=$rto->getToken()->sub;
+		$pid=$rto->getToken()->pid;
                 $rt_expire=$this->c->get('settings')['jwt_refresh_token']['expire']+$this->c->get('settings')['jwt_refresh_token']['time_skew'];
                 $dt2=new \DateTime("@".$dt->getTimestamp()+$rt_expire);
                 $dt2->setTimezone(new \DateTimeZone(date_default_timezone_get()));
                 $this->log->info("Refreshing the refresh token for uid $uid. Will expire at ".$dt2->format('Y-m-d H:i:s'));
-                $rto=$this->generateAndSaveRefreshToken($uid, $rt_expire);
+                $rto=$this->generateAndSaveRefreshToken($uid, $pid, $rt_expire);
                 $rtjwt = $rto->getTokenJWT();
                 $tokens['rt']=$rtjwt;
                 if($tokens['ca']['expires']>0) $tokens['ca']['expires']=$dt2->getTimestamp(); // update cookie expiration

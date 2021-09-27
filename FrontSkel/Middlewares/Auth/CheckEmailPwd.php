@@ -53,12 +53,14 @@ class CheckEmailPwd extends GenericMiddleware implements MiddlewareInterface
         $rememberMe=""; if(isset($params['rememberMe'])) $rememberMe=$params['rememberMe'];
         
         $user=new User($this->c, $this->authdb);
-        $uid=$user->checkEmailPwd($email, $pwd);
+        $userData=$user->checkEmailPwd($email, $pwd);
+	$uid=$userData[0];
         unset($user);
         if($uid>0) {
-            $this->log->info("Password IS valid for email \"$email\". UID: $uid");
+            $this->log->info("Password IS valid for email \"$email\". UID: $uid, PID: $userData[1]");
             $request = $request->withAttribute(self::class.':validCredentials', true); // yes, user can login
             $request = $request->withAttribute(self::class.':uid', $uid); // the user ID
+            $request = $request->withAttribute(self::class.':pid', $userData[1]); // the user user profile ID
         } else { // uid <= 0
             $request = $request->withAttribute(self::class.':validCredentials', false); // no, user cannot login
             switch($uid) {
