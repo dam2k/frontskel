@@ -42,9 +42,9 @@ class App
     protected \Slim\App $slimapp; // our application instance
     
     /**
-     * Initialize the dependency injection container and all its definitions
+     * Initialize the dependency injection container and all its definitions.
      */
-    private function initializeContainer(String $config) : Container {
+    private function initializeContainer(String $config) : \DI\ContainerBuilder {
         $configFile=stream_resolve_include_path($config);
         if(!$configFile || !is_readable($config)) {
             throw new ConfigNotValidException("The configuration file \"$config\" cannot be found or read");
@@ -117,6 +117,19 @@ class App
                 return $smarty;
             },
         ]);
+        return $builder;
+    }
+    
+    /**
+     * prepare container
+     */
+    protected function prepareContainer(\DI\ContainerBuilder &$builder): void {
+    }
+    
+    /**
+     * Build container
+     */
+    private function buildContainer(\DI\ContainerBuilder $builder) : Container {
         return $builder->build();
     }
     
@@ -171,7 +184,9 @@ class App
     
     // config file must be a valid PHP-DI PHP configuration file: https://php-di.org/doc/php-definitions.html
     public function __construct(String $config) {
-        $this->c = $this->initializeContainer($config);
+        $builder = $this->initializeContainer($config);
+	$this->prepareContainer($builder);
+        $this->c = $this->buildContainer($builder);
         $this->slimapp = Bridge::create($this->c); // use slim-bridge to create the slim app: https://php-di.org/doc/frameworks/slim.html
         if(substr($this->c->get('settings')['basePath'], -1) == '/') { // fuck! I said in the config comment to not put a trailing slash, even if basepath is / !!!
             $msg='Please remove trailing slash from basePath parameter in config file!!';
