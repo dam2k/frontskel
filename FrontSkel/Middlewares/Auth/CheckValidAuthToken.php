@@ -53,7 +53,7 @@ class CheckValidAuthToken extends GenericMiddleware implements MiddlewareInterfa
                 $this->log->debug("Since the access token has changed, we need to release the updated cookie");
                 //$cookieOpts=$this->c->get('settings')['login_cookie']['cookieopts'];
                 $cookieOpts=[];
-                $user->updateLoginCookie($response, $uid, $pid, $tokens, $cookieOpts);
+                $user->updateLoginCookie($response, $uid, $tokens, $cookieOpts);
                 return $response;
             }
         } catch (\Exception $e) {
