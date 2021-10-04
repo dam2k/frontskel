@@ -57,11 +57,13 @@ class CheckValidAuthToken extends GenericMiddleware implements MiddlewareInterfa
                 return $response;
             }
         } catch (\Exception $e) {
-            $this->log->debug("Login cookie is not present, expired or not valid: ".$e->getMessage());
+            $this->log->info("Login cookie is not present, expired or not valid: ".$e->getMessage());
             $request = $request->withAttribute(self::class.':uid', ''); // no uid
             $response = $handler->handle($request); // continue to process next middlewares
-            $user->dropLoginCookie($response);
+	    /*
+	    $user->dropLoginCookie($response);
             return $response;
+	    */
         }
         $response = $handler->handle($request); // continue to process next middlewares
         return $response;

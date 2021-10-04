@@ -180,7 +180,12 @@ Class User
      * get tokens from login cookie
      */
     private function extractTokensFromLoginCookie(Request $request, array &$tokens, string &$cleartext, string &$rtjwt, string &$atjwt, string &$cookieOpts): void {
-        $cleartext=EncryptedCookies::decryptCookie($request, $this->c->get('settings')['login_cookie']['cookiename'], $this->c->get('settings')['login_cookie']['key'], $this->c->get('settings')['login_cookie']['salt']);
+        try {
+            $cleartext=EncryptedCookies::decryptCookie($request, $this->c->get('settings')['login_cookie']['cookiename'], $this->c->get('settings')['login_cookie']['key'], $this->c->get('settings')['login_cookie']['salt']);
+        } catch (\Exception $e) {
+            $this->log->warning("Wanted to extract the refresh token but not a valid refresh token was found");
+	    throw $e;
+        }
         $this->log->debug("Clear text cookie value containing refresh and access tokens: $cleartext");
         $tokens=json_decode($cleartext, true);
         $rtjwt=$tokens['rt'];
@@ -195,8 +200,8 @@ Class User
         if($revokeRefreshToken) {
             $cleartext=""; $rtjwt=""; $atjwt=""; $cookieOpts=""; $tokens=[];
             try {
-            $this->extractTokensFromLoginCookie($request, $tokens, $cleartext, $rtjwt, $atjwt, $cookieOpts);
-            $tho = new TokenHandler($this->c); // type: TokenHandler
+                $this->extractTokensFromLoginCookie($request, $tokens, $cleartext, $rtjwt, $atjwt, $cookieOpts);
+                $tho = new TokenHandler($this->c); // type: TokenHandler
                 $tho->loadRefreshTokenFromJWT($rtjwt);
                 $rto=$tho->getRefreshToken();
                 // revoke the refresh token
@@ -241,7 +246,11 @@ Class User
      */
     public function getLoginCookie(Request $request, array &$tokens=[], int &$newcookie=0): \stdClass {
         $cleartext=""; $rtjwt=""; $atjwt=""; $cookieOpts="";
-        $this->extractTokensFromLoginCookie($request, $tokens, $cleartext, $rtjwt, $atjwt, $cookieOpts);
+        try {
+            $this->extractTokensFromLoginCookie($request, $tokens, $cleartext, $rtjwt, $atjwt, $cookieOpts);
+        } catch(\Exception $e) {
+            throw $e;
+        }
         // return TokenHandler object
         $tho = new TokenHandler($this->c); // type: TokenHandler
         try {
