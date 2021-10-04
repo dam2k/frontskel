@@ -276,6 +276,12 @@ Class User
             $stmt->bindValue("jti", $rto->getToken()->jti);
             $result=$stmt->execute();
             $row=$result->fetchAssociative();
+	} catch(\Exception $e) {
+            $this->log->error("Problems with the database: ".$e->getMessage());
+            throw new \Error($e->getMessage());
+	}
+	
+	try {
             if($row) { // token revoked
                 $this->log->info('This refresh token (jti: '.$rto->getToken()->jti.') was released on '.$row['released'].' but was REVOKED on '.$row['revocation_time']);
                 throw new \Exception('Refresh token was REVOKED on '.$row['revocation_time']);
